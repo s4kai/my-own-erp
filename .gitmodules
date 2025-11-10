@@ -1,3 +1,6 @@
 [submodule "common"]
 	path = common
 	url = git@github.com:s4kai/ddd-common-lib.git
+[submodule "infrastructure"]
+	path = infrastructure
+	url = git@github.com:s4kai/ddd-infrasctructure-lib.git

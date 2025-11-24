@@ -1,0 +1,46 @@
+services:
+  postgres_app:
+    image: postgres:15
+    container_name: postgres_app
+    restart: always
+    environment:
+      POSTGRES_DB: ${APP_DB_NAME}
+      POSTGRES_USER: ${APP_DB_USER}
+      POSTGRES_PASSWORD: ${APP_DB_PASS}
+    ports:
+      - "${APP_DB_PORT}:5432"
+    volumes:
+      - postgres_app_data:/var/lib/postgresql/data
+
+  postgres_keycloak:
+    image: postgres:15
+    container_name: postgres_keycloak
+    restart: always
+    environment:
+      POSTGRES_DB: ${KC_DB_NAME}
+      POSTGRES_USER: ${KC_DB_USER}
+      POSTGRES_PASSWORD: ${KC_DB_PASS}
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_kc_data:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    command: ["start-dev"]
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres_keycloak:5432/${KC_DB_NAME}
+      KC_DB_USERNAME: ${KC_DB_USER}
+      KC_DB_PASSWORD: ${KC_DB_PASS}
+      KC_HOSTNAME: localhost
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres_keycloak
+volumes:
+  postgres_app_data:
+  postgres_kc_data:

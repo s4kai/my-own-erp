@@ -33,7 +33,7 @@ Infraestrutura compartilhada com Spring Boot:
 ## 🚀 Quick Start
 
 ### Pré-requisitos
-- Java 17+
+- Java 21+
 - Maven 3.6+
 - Git
 
@@ -73,9 +73,11 @@ seu-modulo/
 │   │   ├── persistence/    # Implementação JPA
 │   │   ├── messaging/      # Handlers de eventos
 │   │   └── config/         # Configurações específicas
-│   └── presentation/
-│       ├── controller/     # Controllers REST
-│       └── dto/            # DTOs de apresentação
+│   │   ├── controller/     # Controllers REST
+│   └── contract/           # Contratos e interfaces públicas
+│       ├── api/            # Interfaces de API
+│       ├── dto/            # DTOs de contrato
+│       └── event/          # Eventos públicos
 └── pom.xml
 ```
 
@@ -119,7 +121,33 @@ seu-modulo/
 </project>
 ```
 
-### 3. Adicione o Módulo ao Parent POM
+### 3. Módulo Contract
+O módulo `contract` define as interfaces públicas e contratos entre módulos:
+
+```java
+// Interface de API pública
+public interface UsuarioApiContract {
+    UsuarioDto buscarPorId(Long id);
+    List<UsuarioDto> listarTodos();
+}
+
+// DTO de contrato
+public class UsuarioContractDto {
+    private Long id;
+    private String nome;
+    private String email;
+    // getters/setters
+}
+
+// Evento público para outros módulos
+public class UsuarioPublicEvent implements DomainEvent {
+    private final Long usuarioId;
+    private final String acao;
+    // implementação
+}
+```
+
+### 4. Adicione o Módulo ao Parent POM
 ```xml
 <modules>
     <module>common</module>
@@ -185,6 +213,35 @@ public class UsuarioCriadoHandler {
 }
 ```
 
+### Contract Layer
+```java
+// Implementação do contrato
+@Component
+public class UsuarioApiContractImpl implements UsuarioApiContract {
+    
+    @Autowired
+    private UsuarioRepository repository;
+    
+    @Override
+    public UsuarioDto buscarPorId(Long id) {
+        // implementação
+    }
+}
+
+// Consumo de contrato de outro módulo
+@Service
+public class ProcessarPedidoService {
+    
+    @Autowired
+    private UsuarioApiContract usuarioContract;
+    
+    public void processar(Long pedidoId) {
+        UsuarioDto usuario = usuarioContract.buscarPorId(userId);
+        // lógica de processamento
+    }
+}
+```
+
 ## 🔧 Tecnologias
 
 - **Java 17**
@@ -206,6 +263,8 @@ public class UsuarioCriadoHandler {
 - ✅ **Application Services**
 - ✅ **Bounded Contexts** (módulos)
 - ✅ **Multi-tenancy Support**
+- ✅ **Published Language** (contratos)
+- ✅ **Anti-Corruption Layer**
 
 ## 🚦 Comandos Úteis
 

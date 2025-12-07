@@ -8,3 +8,7 @@
 	url = git@github.com:s4kai/ddd-infrasctructure-lib.git
     branch = main
 
+[submodule "mdm"]
+	path = mdm
+	url = git@github.com:s4kai/erp-mdm-module.git
+	branch = main

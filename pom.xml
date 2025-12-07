@@ -12,6 +12,7 @@
     <modules>
         <module>common</module>
         <module>infrastructure</module>
+        <module>mdm</module>
     </modules>
 
     <properties>
